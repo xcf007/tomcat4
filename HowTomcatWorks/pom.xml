@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.ydj</groupId>
+  <artifactId>HowTomcatWorks</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  
+  <name>HowTomcatWorks</name>
+  <description>How Tomcat Works  Demo</description>
+  
+   <developers>
+		<developer>
+			<id>HowTomcatWorks</id>
+			<name>Ares</name>
+			<email>369415359@qq.com</email>
+			<url>http://yidejun.com</url>
+		</developer>
+  </developers>
+  
+  
+  <dependencies>
+  	<dependency>
+		    <groupId>javax.servlet</groupId>
+		    <artifactId>servlet-api</artifactId>
+		    <version>2.3</version><!-- 这里使用低版本的servlet -->
+		    <scope>provided</scope>
+	</dependency>
+  </dependencies>
+  
+  <build/>
+  <modules>
+    <module>how-tomcat-works-ex01</module>
+    <module>how-tomcat-works-ex02</module>
+    <module>how-tomcat-works-ex03</module>
+    <module>how-tomcat-works-util</module>
+    <module>how-tomcat-works-ex04</module>
+    <module>how-tomcat-works-ex05</module>
+    <module>how-tomcat-works-ex06</module>
+    <module>how-tomcat-works-ex07</module>
+    <module>how-tomcat-works-ex08</module>
+    <module>how-tomcat-works-ex09</module>
+    <module>how-tomcat-works-ex10</module>
+    <module>how-tomcat-works-ex11</module>
+    <module>how-tomcat-works-ex13</module>
+    <module>how-tomcat-works-ex14</module>
+    <module>how-tomcat-works-ex15</module>
+    <module>how-tomcat-works-ex16</module>
+    <module>how-tomcat-works-ex20</module>
+  </modules>
+</project>
