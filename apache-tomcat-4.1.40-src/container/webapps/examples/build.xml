@@ -1,0 +1,145 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+
+<project name="examples" default="build-main" basedir=".">
+
+
+  <!-- ===================== Initialize Property Values =================== -->
+
+  <!-- See "build.properties.sample" in the top level directory for all     -->
+  <!-- property values you must customize for successful building!!!        -->
+  <property file="build.properties"/>
+  <property file="../build.properties"/>
+  <property file="../../build.properties"/>
+  <property file="${user.home}/build.properties"/>
+
+  <property name="build.compiler"  value="classic"/>
+  <property name="webapps.build"   value="../build"/>
+  <property name="webapps.dist"    value="../dist"/>
+  <property name="webapp.name"     value="examples"/>
+
+  <!-- Construct Catalina classpath -->
+  <path id="examples.classpath">
+    <pathelement location="${activation.jar}"/>
+    <pathelement location="${mail.jar}"/>
+    <pathelement location="${servlet.jar}"/>
+  </path>
+
+  <!-- =================== BUILD: Set compile flags ======================= -->
+  <target name="flags">
+
+    <!-- JDK flags -->
+    <available property="jdk.1.3.present" 
+     classname="java.lang.reflect.Proxy" />
+    <available property="jdk.1.4.present" classname="java.nio.Buffer" />
+
+    <!-- Class availability flags -->
+    <condition property="javamail.present">
+      <and>
+        <available classname="javax.activation.DataSource"
+         classpath="${activation.jar}" />
+        <available classname="javax.mail.Service"
+         classpath="${mail.jar}" />
+      </and>
+    </condition>
+
+    <!-- Conditional compilation flags (determined from the flags above) -->
+    <condition property="compile.javamail">
+      <or>
+        <equals arg1="${full.dist}" arg2="on" />
+        <equals arg1="${javamail.present}" arg2="true" />
+      </or>
+    </condition>
+
+  </target>
+
+  <!-- =================== BUILD: Create Directories ====================== -->
+  <target name="build-prepare">
+    <mkdir dir="${webapps.build}"/>
+    <mkdir dir="${webapps.build}/${webapp.name}"/>
+  </target>
+
+
+  <!-- ================ BUILD: Copy Static Files ========================== -->
+  <target name="build-static" depends="flags,build-prepare">
+    <copy todir="${webapps.build}/${webapp.name}">
+      <fileset dir=".">
+        <exclude name="build.*"/>
+      </fileset>
+    </copy>
+  </target>
+
+
+  <!-- ================= BUILD: Compile Server Components ================= -->
+  <target name="build-main" depends="build-static">
+
+    <javac   srcdir="WEB-INF/classes" 
+             destdir="${webapps.build}/${webapp.name}/WEB-INF/classes"
+             debug="${compile.debug}" deprecation="${compile.deprecation}"
+             optimize="${compile.optimize}"
+             excludes="**/CVS/**">
+      <classpath refid="examples.classpath" />
+      <exclude name="SendMailServlet.java" unless="compile.javamail" />
+    </javac>
+
+    <javac   srcdir="jsp/plugin/applet" 
+             destdir="${webapps.build}/${webapp.name}/jsp/plugin/applet"
+             classpath="${servlet.jar}"
+             debug="${compile.debug}" deprecation="${compile.deprecation}"
+             optimize="${compile.optimize}"
+             excludes="**/CVS/**"/>
+
+  </target>
+
+
+  <!-- ==================== BUILD: Rebuild Everything ===================== -->
+  <target name="all" depends="build-clean,build-main"
+   description="Clean and build examples webapp"/>
+
+
+  <!-- ======================= BUILD: Clean Directory ===================== -->
+  <target name="build-clean">
+    <delete dir="${webapps.build}/${webapp.name}"/>
+  </target>
+
+
+  <!-- ======================= DIST: Create Directories =================== -->
+  <target name="dist-prepare">
+    <mkdir dir="${webapps.dist}"/>
+  </target>
+
+
+  <!-- ======================= DIST: Create Distribution Files ============ -->
+  <target name="dist" depends="build-main,dist-prepare"
+   description="Create examples webapp binary distribution">
+      <jar   jarfile="${webapps.dist}/${webapp.name}.war"
+             basedir="${webapps.build}/${webapp.name}" includes="**"/>
+  </target>
+
+
+  <!-- ======================= DIST: Clean Directory ====================== -->
+  <target name="dist-clean">
+    <delete dir="${dist.dir}/${webapp.name}"/>
+  </target>
+
+
+  <!-- ====================== Convenient Synonyms ========================= -->
+  <target name="clean" depends="build-clean,dist-clean"
+   description="Clean build and dist directories"/>
+
+
+</project>

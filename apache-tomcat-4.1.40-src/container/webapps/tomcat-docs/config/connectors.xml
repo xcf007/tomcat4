@@ -1,0 +1,172 @@
+<?xml version="1.0"?>
+<!DOCTYPE document [
+  <!ENTITY project SYSTEM "project.xml">
+]>
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+
+<document url="connectors.html">
+ 
+  &project;
+ 
+  <properties>
+    <author email="ian779@darwinsys.com">Ian Darwin</author>
+    <author email="jfrederic.clere@fujitsu-siemens.com">Jean-Frederic Clere</author>
+    <title>Connectors Overview</title>
+  </properties>
+ 
+<body>
+ 
+ 
+<section name="Introduction">
+<p>
+There are two different types of connectors. Connectors that allow browsers to
+connect directly to the Tomcat and connectors that do it through a Web Server.
+</p>
+<p>
+The connectors allowing direct connections are distributed as jar files with
+the Tomcat binary releases.
+</p>
+<p>
+The connectors used with a Web Server are made of 2 components. One written
+in Java and the other written in C. The Java part is included, as a jar file
+,
+
+with the Tomcat binary releases. The C part is released separately and may be
+obtained from the
+<a href="http://tomcat.apache.org/download-connectors.cgi">
+Tomcat Connectors Downloads</a>.
+</p>
+<p>
+The total number of different operating systems and web servers is sufficiently
+large that it is not practical to provide binaries downloads for every
+combination. Binaries are provided for most of the popular combinations and if
+the one you need is not available do not hesitate to ask for it on the
+tomcat-user mailing list but please be patient and accept you may have to build
+it yourself with the help of the mailing list.
+</p>
+<p>
+The source code for the Tomcat Connectors is available from the SVN repository
+(<a href="http://tomcat.apache.org/svn.html">Tomcat SVN structure</a>) or as a
+bundle (that includes both the Java and the C components) from the
+<a href="http://tomcat.apache.org/download-connectors.cgi">
+Tomcat Connectors Downloads</a>.
+
+
+</p>
+
+</section>
+
+<section name="Tomcat connectors">
+<p>
+The following table lists most of the existing Tomcat connectors.
+</p>
+
+<table border="1">
+<tr><th colspan="4">HTTP Connectors for Tomcat 4.x</th></tr>
+<tr><th>Client</th><th>Protocol</th><th>Tomcat className</th><th>Notes</th></tr>
+
+<tr><td>Modern browser</td><td>HTTP/1.1</td>
+	<td>org.apache.coyote.tomcat4.CoyoteConnector</td>
+	<td>Current practice<br/>See <a href="coyote.html"> Coyote HTTP/1.1</a>
+        </td>
+</tr>
+
+<tr><td>Modern browser</td><td>HTTP/1.1</td>
+	<td>org.apache.catalina.connector.http.HttpConnector</td>
+	<td>Deprecated<br/>See <a href="http11.html"> HTTP/1.1</a></td>
+</tr>
+
+<tr><td>Ancient browser</td><td>HTTP/1.0</td>
+	<td>org.apache.catalina.connector.http10.HttpConnector</td>
+	<td>Deprecated<br/>See <a href="http11.html"> HTTP/1.1</a></td>
+</tr>
+
+
+<tr><th colspan="4">Web Server Connectors</th></tr>
+
+<tr><th>Web Server Side</th><th>Protocol</th><th>Tomcat Side</th><th>Notes</th></tr>
+
+<tr>
+	<td>JK</td><td>AJP/1.3</td>
+	<td>CoyoteConnector with JkCoyoteHandler</td>
+	<td>Current<br/>mod_jk supports load balancing.
+        Enabled by default in 4.1; works in 4.0. See <a href="jk.html">JK</a>
+        and <a href="coyotejk.html">Coyote JK</a>.
+        </td>
+</tr>
+
+<tr>
+	<td>mod_proxy with AJP enabled</td><td>AJP/1.3</td>
+	<td>CoyoteConnector with JkCoyoteHandler</td>
+	<td>Current<br/>Available for Apache httpd 2.x and included by default with
+        2.2. See <a href="http://httpd.apache.org/docs-2.1/mod/mod_proxy_ajp.html">
+        mod_proxy_ajp</a> and <a href="coyotejk.html">Coyote JK</a>
+        </td>
+</tr>
+
+<tr>
+	<td>mod_jserv</td><td>AJP/1.2</td>
+	<td>Ajp11</td>
+	<td>Obsolete<br/>Read more at 
+        <a href="http://java.apache.org/jserv/index.html"> JServ</a></td>
+</tr>
+
+<tr>
+	<td>JK2</td><td>AJP/1.3</td>
+	<td>CoyoteConnector with JkCoyoteHandler</td>
+	<td>Deprecated<br/>Enabled by default in 4.1.
+	mod_jk2 supports in-process JVM and load balancing.
+        See <a href="jk2.html">JK2</a>
+        </td>
+</tr>
+
+<tr>
+	<td>JK or JK2</td><td>AJP/1.3</td>
+	<td>org.apache.ajp.tomcat4.Ajp13Connector</td>
+	<td>Deprecated<br/>
+        See <a href="ajp13.html">AJP/1.3</a>
+        </td>
+</tr>
+
+<tr>
+	<td>mod_webapp</td><td>WARP/1.0</td>
+	<td>WarpConnector</td>
+	<td>Deprecated<br/>Not for Win32; no in-process nor load balancing; 
+        works in 4.x.
+        Uses <a href="http://apr.apache.org/">APR</a>.
+        Supported Apache-2.0 and Apache-1.3).
+        See <a href="webapp.html">Webapp</a>
+        </td>
+</tr>
+</table>
+</section>
+<section name="Why a Tomcat connector with a native Web Server?">
+<p>
+A Web Server can host different applications written using PERL, PHP, C or 
+any other language. If one application is written in Java using the Servlet 
+API a connector is need to route the requests from the Web Server to the
+Servlet Engine. In the case a Web Server specific connector is needed.
+Most of the Web Servers allow to load dynamic extentions (DLL). Some of these
+extentions are available in the binary builds of connectors.
+</p>
+
+</section>
+
+</body>
+
+</document>

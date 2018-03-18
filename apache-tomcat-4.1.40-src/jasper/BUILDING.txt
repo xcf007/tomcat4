@@ -1,0 +1,13 @@
+1. Go to a tomcat 4.0/4.1 repository
+
+    cd jakarta-tomcat-4.0
+
+2. Edit jakarta-tomcat-4.0/build.properties to include this line
+
+    jasper.home=../jakarta-tomcat-jasper/jasper2
+
+3. Build tomcat 4
+
+    ant clean
+    ant
+

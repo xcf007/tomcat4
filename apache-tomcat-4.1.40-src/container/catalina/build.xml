@@ -1,0 +1,1252 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+
+<project name="Catalina" default="deploy" basedir=".">
+
+
+  <!-- ===================== Initialize Property Values =================== -->
+
+  <!-- See "build.properties.sample" in the top level directory for all     -->
+  <!-- property values you must customize for successful building!!!        -->
+  <property file="build.properties"/>
+  <property file="../build.properties"/>
+  <property file="${user.home}/build.properties"/>
+
+  <!-- Build Defaults -->
+  <property name="build.compiler"    value="classic"/>
+  <property name="catalina.build"    value="${basedir}/build"/>
+  <property name="catalina.deploy"   value="${basedir}/../build"/>
+  <property name="catalina.dist"     value="${basedir}/dist"/>
+  <property name="test.failonerror"  value="true"/>
+  <property name="test.runner"       value="junit.textui.TestRunner"/>
+  <property name="test.webapp"       value="../webapps/build/examples"/>
+  <property name="test.webapp.war"   value="${java.io.tmpdir}/webapp.war"/>
+
+  <!-- Source dependencies -->
+  <property name="tomcat-util.home"       value="${jtc.home}/util"/>
+  <property name="tomcat-coyote.home"     value="${jtc.home}/coyote"/>
+  <property name="tomcat-jk.home"         value="${jtc.home}/jk"/>
+  <property name="tomcat-jni.home"        value="${jtc.home}/jni"/>
+  <property name="tomcat-http11.home"     value="${jtc.home}/http11"/>
+
+  <!-- Dependent JARs and files -->
+  <property name="ant.jar" value="${ant.home}/lib/ant.jar"/>
+  <property name="tomcat-util.jar"
+           value="${tomcat-util.home}/build/lib/tomcat-util.jar"/>
+  <property name="tomcat-coyote.jar"
+           value="${tomcat-coyote.home}/build/lib/tomcat-coyote.jar"/>
+  <property name="tomcat4-coyote.jar"
+           value="${tomcat-coyote.home}/build/lib/tomcat4-coyote.jar"/>
+  <property name="tomcat-jk.jar"
+           value="${tomcat-jk.home}/build/lib/tomcat-jk.jar"/>
+  <property name="tomcat-jk2.jar"
+           value="${tomcat-jk.home}/build/lib/tomcat-jk2.jar"/>
+  <property name="tomcat-jni.jar"
+           value="${tomcat-jk.home}/build/lib/tomcat-jni.jar"/>
+  <property name="jk2.properties"
+           value="${tomcat-jk.home}/build/conf/jk2.properties"/>
+  <property name="tomcat-apr.jar"
+           value="${tomcat-jni.home}/dist/tomcat-native-1.0.0.jar"/>
+  <property name="tomcat-http11.jar"
+           value="${tomcat-http11.home}/build/lib/tomcat-http11.jar"/>
+
+  <!-- Construct Catalina classpath -->
+  <path id="catalina.classpath">
+    <pathelement location="${activation.jar}"/>
+    <pathelement location="${ant.jar}"/>
+    <pathelement location="${commons-beanutils.jar}"/>
+    <pathelement location="${commons-collections.jar}"/>
+    <pathelement location="${commons-daemon.jar}"/>
+    <pathelement location="${commons-dbcp.jar}"/>
+    <pathelement location="${commons-digester.jar}"/>
+    <pathelement location="${commons-fileupload.jar}"/>
+    <pathelement location="${commons-io.jar}"/>
+    <pathelement location="${commons-logging.jar}"/>
+    <pathelement location="${commons-modeler.jar}"/>
+    <pathelement location="${commons-pool.jar}"/>
+    <pathelement location="${tomcat-util.jar}"/>
+    <pathelement location="${jcert.jar}"/>
+    <pathelement location="${jdbc20ext.jar}"/>
+    <pathelement location="${jmx.jar}"/>
+    <pathelement location="${jnet.jar}"/>
+    <pathelement location="${jsse.jar}"/>
+    <pathelement location="${jta.jar}"/>
+    <pathelement location="${mail.jar}"/>
+    <pathelement location="${regexp.jar}"/>
+    <pathelement location="${servlet.jar}"/>
+    <pathelement location="${tyrex.jar}"/>
+    <pathelement location="${xerces.jar}"/>
+    <pathelement location="${xercesImpl.jar}"/>
+    <pathelement location="${xmlParserAPIs.jar}"/>
+    <pathelement location="${catalina.build}/server/classes"/>
+  </path>
+
+  <!-- Construct unit tests classpath -->
+  <path id="test.classpath">
+    <pathelement location="${junit.jar}"/>
+    <pathelement location="${activation.jar}"/>
+    <pathelement location="${ant.jar}"/>
+    <pathelement location="${commons-beanutils.jar}"/>
+    <pathelement location="${commons-collections.jar}"/>
+    <pathelement location="${commons-daemon.jar}"/>
+    <pathelement location="${commons-dbcp.jar}"/>
+    <pathelement location="${commons-digester.jar}"/>
+    <pathelement location="${commonsf-ileupload.jar}"/>
+    <pathelement location="${commons-logging.jar}"/>
+    <pathelement location="${commons-modeler.jar}"/>
+    <pathelement location="${commons-pool.jar}"/>
+    <pathelement location="${jcert.jar}"/>
+    <pathelement location="${jdbc20ext.jar}"/>
+    <pathelement location="${jmx.jar}"/>
+    <pathelement location="${jnet.jar}"/>
+    <pathelement location="${jsse.jar}"/>
+    <pathelement location="${jta.jar}"/>
+    <pathelement location="${mail.jar}"/>
+    <pathelement location="${regexp.jar}"/>
+    <pathelement location="${servlet.jar}"/>
+    <pathelement location="${tyrex.jar}"/>
+    <pathelement location="${xerces.jar}"/>
+    <pathelement location="${xercesImpl.jar}"/>
+    <pathelement location="${xmlParserAPIs.jar}"/>
+    <pathelement location="${catalina.build}/server/classes"/>
+    <pathelement location="${catalina.build}/tests"/>
+  </path>
+
+  <!-- Source path -->
+  <path id="javadoc.sourcepath">
+    <pathelement location="src/share"/>
+    <pathelement location="${tomcat-util.home}/java"/>
+    <pathelement location="${tomcat-coyote.home}/src/java"/>
+    <pathelement location="${tomcat-jk.home}/java"/>
+    <pathelement location="${tomcat-http11.home}/src/java"/>
+  </path>
+
+
+  <!-- =================== BUILD: Set compile flags ======================= -->
+  <target name="flags">
+
+    <!-- JDK flags -->
+    <available property="jdk.1.3.present" 
+     classname="java.lang.reflect.Proxy" />
+    <available property="jdk.1.4.present" classname="java.nio.Buffer" />
+
+    <!-- Ant flags -->
+    <available property="style.available"
+     classname="org.apache.tools.ant.taskdefs.optional.TraXLiaison" />
+
+    <!-- Source path -->
+    <available property="jtc.home.present" file="${jtc.home}" />
+
+    <!-- Class availability flags -->
+    <available property="beanutils.present"
+     classname="org.apache.commons.beanutils.BeanUtils"
+     classpath="${commons-beanutils.jar}"/>
+    <available property="collections.present"
+     classname="org.apache.commons.collections.FastHashMap"
+     classpath="${commons-collections.jar}"/>
+    <available property="daemon.present"
+     classname="org.apache.commons.daemon.Daemon"
+     classpath="${commons-daemon.jar}"/>
+    <available property="dbcp.present"
+     classname="org.apache.commons.dbcp.ConnectionFactory"
+     classpath="${commons-dbcp.jar}"/>
+    <available property="digester.present"
+     classname="org.apache.commons.digester.Digester"
+     classpathref="catalina.classpath"/>
+    <available property="fileupload.present"
+     classname="org.apache.commons.fileupload.FileUpload"
+     classpathref="catalina.classpath"/>
+    <available property="io.present"
+     classname="org.apache.commons.io.IOUtils"
+     classpathref="catalina.classpath"/>
+    <available property="logging.present"
+     classname="org.apache.commons.logging.Log"
+     classpath="${commons-logging.jar}"/>
+    <available property="modeler.present"
+     classname="org.apache.commons.modeler.Registry"
+     classpathref="catalina.classpath"/>
+    <condition property="jaxp.present">
+      <and>
+        <available classname="javax.xml.parsers.SAXParser"
+         classpath="${xerces.jar}:${xmlParserAPIs.jar}" />
+        <available classname="org.xml.sax.ContentHandler"
+         classpath="${xerces.jar}:${xmlParserAPIs.jar}" />
+      </and>
+    </condition>
+    <condition property="javamail.present">
+      <and>
+        <available classname="javax.activation.DataSource"
+         classpath="${activation.jar}" />
+        <available classname="javax.mail.Service"
+         classpath="${mail.jar}" />
+      </and>
+    </condition>
+    <available property="jmx.present"
+     classname="javax.management.MBeanServer"
+     classpath="${jmx.jar}" />
+    <condition property="jsse.present">
+      <and>
+        <available classname="javax.security.cert.Certificate"
+         classpath="${jcert.jar}" />
+        <available classname="javax.net.SocketFactory"
+         classpath="${jnet.jar}" />
+        <available classname="javax.net.ssl.SSLSocket"
+         classpath="${jsse.jar}" />
+      </and>
+    </condition>
+    <condition property="jta.present">
+      <and>
+        <available classname="javax.sql.XADataSource"
+         classpath="${jdbc20ext.jar}" />
+        <available classname="javax.transaction.UserTransaction"
+         classpath="${jta.jar}" />
+      </and>
+    </condition>
+    <available property="junit.present"
+     classname="junit.framework.TestCase"
+     classpath="${junit.jar}" />
+    <available property="pool.present"
+     classname="org.apache.commons.pool.ObjectPool"
+     classpath="${commons-pool.jar}"/>
+    <available property="regexp.present"
+     classname="org.apache.regexp.RE"
+     classpath="${regexp.jar}" />
+    <available property="servlet.present"
+     classname="javax.servlet.Servlet"
+     classpath="${servlet.jar}" />
+    <available property="tyrex.present"
+     classname="tyrex.tm.TyrexTransaction"
+     classpathref="catalina.classpath" />
+    <available property="xerces.present"
+     classname="org.apache.xerces.parsers.SAXParser"
+     classpath="${xerces.jar}:${xercesImpl.jar}" />
+
+    <!-- JAR files availability flags -->
+    <available property="daemon.jar.present" file="${commons-daemon.jar}" />
+    <available property="dbcp.jar.present" file="${commons-dbcp.jar}" />
+    <available property="fileupload.jar.present" file="${commons-fileupload.jar}" />
+    <available property="io.jar.present" file="${commons-io.jar}" />
+    <condition property="javamail.jar.present">
+      <and>
+        <available file="${activation.jar}" />
+        <available file="${mail.jar}" />
+      </and>
+    </condition>
+    <available property="jdbc20ext.jar.present" file="${jdbc20ext.jar}" />
+    <available property="jmx.jar.present" file="${jmx.jar}" />
+    <available property="jcert.jar.present" file="${jcert.jar}" />
+    <available property="jnet.jar.present" file="${jnet.jar}" />
+    <available property="jsse.jar.present" file="${jsse.jar}" />
+    <available property="jta.jar.present" file="${jta.jar}" />
+    <available property="junit.jar.present" file="${junit.jar}" />
+    <available property="logging.jar.present" file="${commons-logging.jar}" />
+    <available property="modeler.jar.present" file="${commons-modeler.jar}" />
+    <available property="pool.jar.present" file="${commons-pool.jar}" />
+    <available property="regexp.jar.present" file="${regexp.jar}" />
+    <available property="servlet.jar.present" file="${servlet.jar}" />
+    <available property="tomcat-util.jar.present" file="${tomcat-util.jar}" />
+    <available property="tyrex.jar.present" file="${tyrex.jar}" />
+    <available property="xerces.jar.present" file="${xerces.jar}" />
+    <available property="xercesImpl.jar.present" file="${xercesImpl.jar}"/>
+    <available property="xmlParserAPIs.jar.present" file="${xmlParserAPIs.jar}"/>
+    <condition property="xerces2.jars.present">
+      <and>
+        <equals arg1="${xercesImpl.jar.present}" arg2="true"/>
+        <equals arg1="${xmlParserAPIs.jar.present}" arg2="true"/>
+      </and>
+    </condition>
+
+    <!-- Conditional compilation flags (determined from the flags above) -->
+    <condition property="compile.daemon">
+      <or>
+        <equals arg1="${full.dist}" arg2="on" />
+        <equals arg1="${daemon.present}" arg2="true" />
+      </or>
+    </condition>
+    <condition property="compile.dbcp">
+      <or>
+        <equals arg1="${full.dist}" arg2="on" />
+        <and>
+          <equals arg1="${dbcp.present}" arg2="true" />
+          <equals arg1="${pool.present}" arg2="true" />
+        </and>
+      </or>
+    </condition>
+    <condition property="compile.javamail">
+      <or>
+        <equals arg1="${full.dist}" arg2="on" />
+        <equals arg1="${javamail.present}" arg2="true" />
+      </or>
+    </condition>
+    <condition property="compile.jmx">
+      <or>
+        <equals arg1="${full.dist}" arg2="on" />
+        <and>
+          <equals arg1="${jmx.present}" arg2="true" />
+          <equals arg1="${modeler.present}" arg2="true" />
+        </and>
+      </or>
+    </condition>
+    <condition property="compile.jsse">
+      <or>
+        <equals arg1="${full.dist}" arg2="on" />
+        <equals arg1="${jsse.present}" arg2="true" />
+        <equals arg1="${jdk.1.4.present}" arg2="true" />
+      </or>
+    </condition>
+    <condition property="compile.jta">
+      <or>
+        <equals arg1="${full.dist}" arg2="on" />
+        <equals arg1="${jta.present}" arg2="true" />
+      </or>
+    </condition>
+    <condition property="compile.junit">
+      <or>
+        <equals arg1="${full.dist}" arg2="on" />
+        <equals arg1="${junit.present}" arg2="true" />
+      </or>
+    </condition>
+    <property name="compile.ssi" value="true"/>
+    <condition property="compile.tyrex">
+      <or>
+        <equals arg1="${full.dist}" arg2="on" />
+        <equals arg1="${tyrex.present}" arg2="true" />
+      </or>
+    </condition>
+
+
+    <!-- Conditional copy flags (determined from the flags above) -->
+    <condition property="copy.daemon.jar">
+      <or>
+        <equals arg1="${full.dist}" arg2="on" />
+        <equals arg1="${daemon.jar.present}" arg2="true" />
+      </or>
+    </condition>
+    <condition property="copy.dbcp.jar">
+      <and>
+        <not>
+          <equals arg1="${light.dist}" arg2="on" />
+        </not>
+        <or>
+          <equals arg1="${full.dist}" arg2="on" />
+          <equals arg1="${dbcp.present}" arg2="true" />
+        </or>
+      </and>
+    </condition>
+    <condition property="copy.jdbc20ext.jar">
+      <and>
+        <not>
+          <equals arg1="${light.dist}" arg2="on" />
+        </not>
+        <or>
+          <equals arg1="${full.dist}" arg2="on" />
+          <and>
+            <equals arg1="${jdbc20ext.jar.present}" arg2="true" />
+            <not>
+              <equals arg1="${jdk.1.4.present}" arg2="true" />
+            </not>
+          </and>
+        </or>
+      </and>
+    </condition>
+    <condition property="copy.javamail.jar">
+      <and>
+        <not>
+          <equals arg1="${light.dist}" arg2="on" />
+        </not>
+        <or>
+          <equals arg1="${full.dist}" arg2="on" />
+          <equals arg1="${javamail.jar.present}" arg2="true" />
+        </or>
+      </and>
+    </condition>
+    <condition property="copy.jmx.jar">
+      <or>
+        <equals arg1="${full.dist}" arg2="on" />
+        <equals arg1="${jmx.jar.present}" arg2="true" />
+      </or>
+    </condition>
+    <condition property="copy.jta.jar">
+      <and>
+        <not>
+          <equals arg1="${light.dist}" arg2="on" />
+        </not>
+        <or>
+          <equals arg1="${full.dist}" arg2="on" />
+          <equals arg1="${jta.jar.present}" arg2="true" />
+        </or>
+      </and>
+    </condition>
+    <condition property="copy.jsse.jar">
+      <and>
+        <not>
+          <equals arg1="${light.dist}" arg2="on" />
+        </not>
+        <or>
+          <equals arg1="${full.dist}" arg2="on" />
+          <and>
+            <equals arg1="${jcert.jar.present}" arg2="true" />
+            <equals arg1="${jnet.jar.present}" arg2="true" />
+            <equals arg1="${jsse.jar.present}" arg2="true" />
+            <not>
+              <equals arg1="${jdk.1.4.present}" arg2="true" />
+            </not>
+          </and>
+        </or>
+      </and>
+    </condition>
+    <condition property="copy.modeler.jar">
+      <or>
+        <equals arg1="${full.dist}" arg2="on" />
+        <equals arg1="${modeler.present}" arg2="true" />
+      </or>
+    </condition>
+    <condition property="copy.logging.jar">
+      <or>
+        <equals arg1="${full.dist}" arg2="on" />
+        <equals arg1="${logging.present}" arg2="true" />
+      </or>
+    </condition>
+    <condition property="copy.pool.jar">
+      <and>
+        <not>
+          <equals arg1="${light.dist}" arg2="on" />
+        </not>
+        <or>
+          <equals arg1="${full.dist}" arg2="on" />
+          <equals arg1="${pool.present}" arg2="true" />
+        </or>
+      </and>
+    </condition>
+    <condition property="copy.tyrex.jar">
+      <and>
+        <not>
+          <equals arg1="${light.dist}" arg2="on" />
+        </not>
+        <or>
+          <equals arg1="${full.dist}" arg2="on" />
+          <equals arg1="${tyrex.jar.present}" arg2="true" />
+        </or>
+      </and>
+    </condition>
+    <condition property="copy.xerces.jar">
+      <and>
+        <not>
+          <equals arg1="${light.dist}" arg2="on" />
+        </not>
+        <and>
+          <equals arg1="${xerces.jar.present}" arg2="true" />
+          <not>
+            <equals arg1="${xerces2.jars.present}" arg2="true" />
+          </not>
+          <or>
+            <equals arg1="${full.dist}" arg2="on" />
+            <not>
+              <equals arg1="${jdk.1.4.present}" arg2="true" />
+            </not>
+          </or>
+        </and>
+      </and>
+    </condition>
+    <condition property="copy.xerces2.jars">
+      <and>
+        <not>
+          <equals arg1="${light.dist}" arg2="on" />
+        </not>
+        <and>
+          <equals arg1="${xerces2.jars.present}" arg2="true" />
+          <or>
+            <equals arg1="${full.dist}" arg2="on" />
+            <not>
+              <equals arg1="${jdk.1.4.present}" arg2="true" />
+            </not>
+          </or>
+        </and>
+      </and>
+    </condition>
+
+  </target>
+
+
+  <!-- =================== BUILD: Set compile flags ======================= -->
+  <target name="flags.display" depends="flags" unless="flags.hide">
+
+    <echo message="--- Build environment for Catalina ---" />
+
+    <echo message="If ${property_name} is displayed, then the property is not set)" />
+
+    <echo message="--- Build options ---" />
+    <echo message="full.dist=${full.dist}" />
+    <echo message="build.sysclasspath=${build.sysclasspath}" />
+    <echo message="compile.debug=${compile.debug}" />
+    <echo message="compile.deprecation=${compile.deprecation}" />
+    <echo message="compile.optimize=${compile.optimize}" />
+
+    <echo message="--- Ant Flags ---" />
+    <echo message="&lt;style&gt; task available (required)=${style.available}" />
+
+    <echo message="--- JDK ---" />
+    <echo message="jdk.1.3.present=${jdk.1.3.present}" />
+    <echo message="jdk.1.4.present=${jdk.1.4.present}" />
+
+    <echo message="--- Source Dependencies ---" />
+    <echo message="jtc.home.present=${jtc.home.present}" />
+
+    <echo message="--- Required Libraries ---" />
+    <echo message="beanutils.present=${beanutils.present}" />
+    <echo message="collections.present=${collections.present}" />
+    <echo message="digester.present=${digester.present}" />
+    <echo message="jaxp.present=${jaxp.present}" />
+    <echo message="logging.present=${logging.present}" />
+    <echo message="regexp.present=${regexp.present}" />
+    <echo message="servlet.present=${servlet.present}" />
+
+    <echo message="--- Optional Libraries ---" />
+    <echo message="daemon.present=${daemon.present}" />
+    <echo message="dbcp.present=${dbcp.present}" />
+    <echo message="fileupload.present=${fileupload.present}" />
+    <echo message="io.present=${io.present}" />
+    <echo message="javamail.present=${javamail.present}" />
+    <echo message="jmx.present=${jmx.present}" />
+    <echo message="jsse.present=${jsse.present}" />
+    <echo message="jta.present=${jta.present}" />
+    <echo message="junit.present=${junit.present}" />
+    <echo message="modeler.present=${modeler.present}" />
+    <echo message="pool.present=${pool.present}" />
+    <echo message="tyrex.present=${tyrex.present}" />
+
+    <echo message="--- Required JARs ---" />
+    <echo message="regexp.jar.present=${regexp.jar.present}" />
+    <echo message="servlet.jar.present=${servlet.jar.present}" />
+    <echo message="xerces.jar.present(except JDK 1.4+ or xerces2)=${xerces.jar.present}" />
+    <echo message="xerces2.jars.present(except JDK 1.4+ or xerces1)=${xerces2.jars.present}" />
+
+    <echo message="--- Optional JARs ---" />
+    <echo message="daemon.jar.present=${daemon.jar.present}" />
+    <echo message="dbcp.jar.present=${dbcp.jar.present}" />
+    <echo message="fileupload.jar.present=${fileupload.jar.present}" />
+    <echo message="io.jar.present=${io.jar.present}" />
+    <echo message="javamail.jar.present=${javamail.jar.present}" />
+    <echo message="jdbc20ext.jar.present=${jdbc20ext.jar.present}" />
+    <echo message="jmx.jar.present=${jmx.jar.present}" />
+    <echo message="jta.jar.present=${jta.jar.present}" />
+    <echo message="junit.jar.present=${junit.jar.present}" />
+    <echo message="modeler.jar.present=${modeler.jar.present}" />
+    <echo message="pool.jar.present=${pool.jar.present}" />
+    <echo message="tyrex.jar.present=${tyrex.jar.present}" />
+
+    <echo message="--- Conditional compilation flags ---" />
+    <echo message="compile.daemon=${compile.daemon}" />
+    <echo message="compile.dbcp=${compile.dbcp}" />
+    <echo message="compile.javamail=${compile.javamail}" />
+    <echo message="compile.jmx=${compile.jmx}" />
+    <echo message="compile.jsse=${compile.jsse}" />
+    <echo message="compile.jta=${compile.jta}" />
+    <echo message="compile.junit=${compile.junit}" />
+    <echo message="compile.ssi=${compile.ssi}" />
+    <echo message="compile.tyrex=${compile.tyrex}" />
+
+    <echo message="--- Distribution flags ---" />
+    <echo message="copy.daemon.jar=${copy.daemon.jar}" />
+    <echo message="copy.dbcp.jar=${copy.dbcp.jar}" />
+    <echo message="copy.jdbc20ext.jar=${copy.jdbc20ext.jar}" />
+    <echo message="copy.javamail.jar=${copy.javamail.jar}" />
+    <echo message="copy.jmx.jar=${copy.jmx.jar}" />
+    <echo message="copy.jta.jar=${copy.jta.jar}" />
+    <echo message="copy.logging.jar=${copy.logging.jar}" />
+    <echo message="copy.modeler.jar=${copy.modeler.jar}" />
+    <echo message="copy.pool.jar=${copy.pool.jar}" />
+    <echo message="copy.tyrex.jar=${copy.tyrex.jar}" />
+    <echo message="copy.xerces.jar=${copy.xerces.jar}" />
+    <echo message="copy.xerces2.jars=${copy.xerces2.jars}"/>
+
+  </target>
+
+  <!-- =================== BUILD: Create Directories ====================== -->
+  <target name="build-prepare">
+
+    <mkdir dir="${catalina.build}"/>
+    <mkdir dir="${catalina.build}/bin"/>
+    <mkdir dir="${catalina.build}/common/classes"/>
+    <mkdir dir="${catalina.build}/common/lib"/>
+    <mkdir dir="${catalina.build}/common/endorsed"/>
+    <mkdir dir="${catalina.build}/conf"/>
+    <mkdir dir="${catalina.build}/logs"/>
+    <mkdir dir="${catalina.build}/server/classes"/>
+    <mkdir dir="${catalina.build}/server/lib"/>
+    <mkdir dir="${catalina.build}/shared/classes"/>
+    <mkdir dir="${catalina.build}/shared/lib"/>
+    <mkdir dir="${catalina.build}/work"/>
+    <mkdir dir="${catalina.build}/temp"/>
+
+  </target>
+
+
+  <!-- ======================== BUILD: Copy JARs ========================== -->
+  <target name="copy-activation.jar" if="copy.javamail.jar">
+    <copy todir="${catalina.build}/common/lib" file="${activation.jar}"/>
+    <copy todir="${catalina.build}/common/lib" file="${mail.jar}"/>
+  </target>
+  <target name="copy-daemon.jar" if="copy.daemon.jar">
+    <copy todir="${catalina.build}/bin" file="${commons-daemon.jar}"/>
+  </target>
+  <target name="copy-dbcp.jar" if="copy.dbcp.jar">
+    <copy todir="${catalina.build}/common/lib" file="${commons-dbcp.jar}"/>
+  </target>
+  <target name="copy-fileupload.jar" if="fileupload.jar.present">
+    <copy todir="${catalina.build}/server/lib"
+          file="${commons-fileupload.jar}"/>
+  </target>
+  <target name="copy-io.jar" if="io.jar.present">
+    <copy todir="${catalina.build}/server/lib"
+          file="${commons-io.jar}"/>
+  </target>
+  <target name="copy-jdbc20ext.jar" if="copy.jdbc20ext.jar">
+    <copy todir="${catalina.build}/common/lib" file="${jdbc20ext.jar}"/>
+  </target>
+  <target name="copy-jmx.jar" if="copy.jmx.jar">
+    <copy todir="${catalina.build}/server/lib" file="${jmx.jar}"/>
+    <copy tofile="${catalina.build}/server/lib/mx4j.license" file="${jmx.license}"/>
+  </target>
+  <target name="copy-jta.jar" if="copy.jta.jar">
+    <copy todir="${catalina.build}/common/lib" file="${jta.jar}"/>
+  </target>
+  <target name="copy-jsse.jar" if="copy.jsse.jar">
+    <!-- Cannot redistribute JSSE
+    <copy todir="${catalina.build}/common/lib" file="${jcert.jar}"/>
+    <copy todir="${catalina.build}/common/lib" file="${jnet.jar}"/>
+    <copy todir="${catalina.build}/common/lib" file="${jsse.jar}"/>
+    -->
+  </target>
+  <target name="copy-modeler.jar" if="copy.modeler.jar">
+    <copy todir="${catalina.build}/server/lib" file="${commons-modeler.jar}"/>
+  </target>
+  <target name="copy-pool.jar" if="copy.pool.jar">
+    <copy todir="${catalina.build}/common/lib" file="${commons-pool.jar}"/>
+  </target>
+  <target name="copy-tomcat-util.jar">
+    <copy todir="${catalina.build}/server/lib" file="${tomcat-util.jar}"/>
+  </target>
+  <target name="copy-tyrex.jar" if="copy.tyrex.jar">
+    <!-- Don't redistribute Tyrex: Too many dependencies and complex to setup
+    <copy todir="${catalina.build}/common/lib" file="${tyrex.jar}"/>
+    <copy todir="${catalina.build}/common/lib" file="../lib/tyrex.license"/>
+    -->
+  </target>
+  <target name="copy-xerces.jar" if="copy.xerces.jar">
+    <copy todir="${catalina.build}/common/endorsed" file="${xerces.jar}"/>
+  </target>
+  <target name="copy-xerces2.jars" if="copy.xerces2.jars">
+    <copy todir="${catalina.build}/common/endorsed" file="${xercesImpl.jar}"/>
+    <copy todir="${catalina.build}/common/endorsed" file="${xmlParserAPIs.jar}"/>
+  </target>
+
+
+  <!-- =================== BUILD: Copy Static Files ======================= -->
+  <target name="build-static" depends="flags,flags.display,build-prepare,copy-activation.jar,copy-daemon.jar,copy-dbcp.jar,copy-fileupload.jar,copy-io.jar,copy-jdbc20ext.jar,copy-jmx.jar,copy-jsse.jar,copy-jta.jar,copy-modeler.jar,copy-pool.jar,copy-tyrex.jar,copy-xerces.jar,copy-xerces2.jars">
+
+    <!-- Executable Commands -->
+    <copy todir="${catalina.build}/bin">
+      <fileset dir="src/bin" />
+    </copy>
+    <fixcrlf srcdir="${catalina.build}/bin" includes="*.sh" eol="lf"/>
+    <fixcrlf srcdir="${catalina.build}/bin" includes="*.bat" eol="crlf"/>
+    <chmod perm="+x" file="${catalina.build}/bin/catalina.sh"/>
+    <chmod perm="+x" file="${catalina.build}/bin/digest.sh"/>
+    <chmod perm="+x" file="${catalina.build}/bin/startup.sh"/>
+    <chmod perm="+x" file="${catalina.build}/bin/shutdown.sh"/>
+    <chmod perm="+x" file="${catalina.build}/bin/tool-wrapper.sh"/>
+
+    <!-- Common Extensions -->
+    <copy todir="${catalina.build}/common/lib" file="${servlet.jar}"/>
+    <copy todir="${catalina.build}/common/lib"
+           file="${commons-collections.jar}"/>
+
+    <!-- Configuration Files -->
+    <copy todir="${catalina.build}/conf">
+      <fileset dir="src/conf">
+        <exclude name="catalina.conf.xml" />
+      </fileset>
+    </copy>
+
+    <!-- JVM Temporary Directory README -->
+    <copy todir="${catalina.build}/temp"
+          file="src/temp/README.txt"/>
+
+    <!-- Catalina Server Libraries -->
+    <copy todir="${catalina.build}/server/lib"
+           file="${commons-beanutils.jar}"/>
+    <copy todir="${catalina.build}/server/lib"
+           file="${commons-digester.jar}"/>
+    <copy todir="${catalina.build}/server/lib"
+           file="${commons-logging.jar}"/>
+    <copy todir="${catalina.build}/common/lib"
+           file="${commons-logging-api.jar}"/>
+    <copy todir="${catalina.build}/server/lib" file="${regexp.jar}"/>
+
+  </target>
+
+
+  <!-- =================== BUILD: Build tomcat-apr ======================== -->
+  <target name="build-tomcat-apr" if="jdk.1.4.present" >
+
+    <ant dir="${tomcat-jni.home}" target="jar" inheritAll="false" >
+       <property name="version" value="1.0.0" />
+    </ant>
+
+  </target>
+
+
+  <!-- =================== BUILD: Build tomcat-util ======================= -->
+  <target name="build-tomcat-util" depends="build-tomcat-apr" >
+
+    <!-- Remove references to CharSequence as it is a 1.4 class -->
+    <replace file="${tomcat-util.home}/java/org/apache/tomcat/util/buf/CharChunk.java">
+      <replacefilter
+             token=", CharSequence {"
+             value=" {" />
+      <replacefilter
+             token="public CharSequence subSequence"
+             value="public CharChunk subSequence" />
+    </replace>
+
+    <!-- Remove references to 1.5 annotations -->
+    <replace dir="${tomcat-util.home}/java">
+      <replacefilter
+             token="@Deprecated"
+             value="" />
+    </replace>
+
+    <!-- StringBuffer.append(StringBuffer) is a 1.4 method -->
+    <replace file="${tomcat-util.home}/java/org/apache/tomcat/util/http/ServerCookie.java">
+      <replacefilter
+             token="headerBuf.append(buf);"
+             value="headerBuf.append(buf.toString());" />
+    </replace>
+
+    <ant dir="${tomcat-util.home}" target="build-main" inheritAll="false" >
+       <property name="jmx.jar" value="${jmx.jar}" />
+       <property name="puretls.jar" value="${puretls.jar}" />
+       <property name="jsse.lib" value="${jsse.lib}" />
+       <property name="commons-logging.jar" value="${commons-logging.jar}" />
+       <property name="commons-modeler.jar" value="${commons-modeler.jar}" />
+       <property name="skip.digester" value="true" />
+    </ant>
+
+    <copy todir="${catalina.build}/server/lib"
+           file="${tomcat-util.jar}"/>
+
+  </target>
+
+
+  <!-- ================ BUILD: Compile Catalina Components ================ -->
+  <target name="build-catalina">
+
+    <!-- Compile internal server components -->
+    <javac srcdir="src/share" destdir="${catalina.build}/server/classes"
+           debug="${compile.debug}" deprecation="${compile.deprecation}"
+           optimize="${compile.optimize}"
+           excludes="**/CVS/**">
+      <classpath refid="catalina.classpath" />
+      <exclude name="org/apache/naming/NamingService.java"
+       unless="compile.jmx"/>
+      <exclude name="org/apache/naming/factory/DbcpDataSourceFactory.java" 
+       unless="compile.dbcp"/>
+      <exclude name="org/apache/naming/factory/Tyrex*.java" 
+       unless="compile.tyrex"/>
+      <exclude name="org/apache/catalina/mbeans/**"
+       unless="compile.jmx"/>
+      <exclude name="org/apache/catalina/net/SSLServerSocketFactory.java" 
+       unless="compile.jsse"/>
+      <exclude name="org/apache/catalina/startup/BootstrapService.java"
+       unless="compile.daemon"/>
+      <exclude name="org/apache/catalina/startup/BootstrapServiceContext.java"
+       unless="compile.daemon"/>
+      <exclude name="org/apache/catalina/ssi/**"
+       unless="compile.ssi"/>
+      <exclude name="org/apache/catalina/valves/CertificatesValve.java"
+       unless="compile.jsse"/>
+      <exclude name="org/apache/naming/factory/MailSessionFactory.java"
+       unless="compile.javamail"/>
+      <exclude name="org/apache/naming/factory/SendMailFactory.java"
+       unless="compile.javamail"/>
+      <exclude name="org/apache/catalina/startup/EmbeddedManager.java"
+       unless="compile.jmx"/>
+      <exclude name="org/apache/catalina/startup/CatalinaManager.java"
+       unless="compile.jmx"/>
+      <exclude name="org/apache/naming/NamingService.java"
+       unless="compile.jmx"/>
+    </javac>
+
+    <!-- Copy static resource files -->
+    <filter token="VERSION" value="${version}"/>
+    <copy todir="${catalina.build}/server/classes" filtering="true">
+      <fileset dir="src/share">
+        <exclude name="**/*.java"/>
+        <exclude name="**/package.html"/>
+      </fileset>
+    </copy>
+
+  </target>
+
+
+  <!-- ================== BUILD: Build tomcat-coyote ====================== -->
+  <target name="build-tomcat-coyote">
+
+    <ant dir="${tomcat-coyote.home}" target="compile">
+      <property name="catalina.home" value="${catalina.deploy}"/>
+    </ant>
+
+    <copy todir="${catalina.deploy}/server/lib"
+           file="${tomcat-coyote.jar}"/>
+    <copy todir="${catalina.deploy}/server/lib"
+           file="${tomcat4-coyote.jar}"/>
+
+  </target>
+
+
+  <!-- ==================== BUILD: Build tomcat-jk ======================== -->
+  <target name="build-tomcat-jk">
+
+    <ant dir="${tomcat-jk.home}" target="build-main">
+      <property name="tomcat40.home" value="${catalina.deploy}"/>
+      <property name="tomcat41.home" value="${catalina.deploy}"/>
+      <property name="commons-logging.jar" value="${commons-logging.jar}"/>
+      <property name="jmx.jar" value="${jmx.jar}"/>
+      <property name="servlet-api.jar" value="${servlet.jar}"/>
+      <property name="tomcat-apr.jar" value="${tomcat-apr.jar}"/>
+    </ant>
+
+    <copy todir="${catalina.deploy}/server/lib"
+           file="${tomcat-jk.jar}"/>
+    <copy todir="${catalina.deploy}/server/lib"
+           file="${tomcat-jk2.jar}"/>
+    <copy todir="${catalina.deploy}/bin"
+           file="${tomcat-jni.jar}"/>
+    <copy todir="${catalina.deploy}/conf"
+           file="${jk2.properties}"/>
+
+  </target>
+
+
+  <!-- ============== BUILD: Build tomcat-coyote-http11 =================== -->
+  <target name="build-tomcat-http11">
+
+    <!-- Replace 1.4 regexp with jakarta-regexp -->
+    <replace file="${tomcat-http11.home}/src/java/org/apache/coyote/http11/Http11Processor.java">
+      <replacefilter
+             token="java.util.regex.Pattern"
+             value="org.apache.regexp.RE" />
+      <replacefilter
+             token="Pattern.compile"
+             value="new RE" />
+      <replacefilter
+             token="Pattern"
+             value="RE" />
+      <replacefilter
+             token="matcher(userAgentValue).matches()"
+             value="match(userAgentValue)" />
+    </replace>
+
+    <ant dir="${tomcat-http11.home}" target="compile">
+      <property name="commons-logging.jar" value="${commons-logging.jar}"/>
+      <property name="tomcat-jni.jar" value="${tomcat-apr.jar}"/>
+    </ant>
+
+    <copy todir="${catalina.deploy}/server/lib"
+           file="${tomcat-http11.jar}"/>
+
+  </target>
+
+
+  <!-- ================= BUILD: Compile All Server Components ============= -->
+  <target name="build-main" depends="build-static,build-tomcat-util,build-catalina">
+  </target>
+
+
+  <!-- ================ BUILD: Create Catalina Javadocs =================== -->
+  <target name="javadoc">
+    <delete dir="${catalina.build}/javadoc"/>
+    <mkdir dir="${catalina.build}/javadoc"/>
+    <javadoc packagenames="org.apache.catalina.*,org.apache.naming.*"
+      classpathref="catalina.classpath"
+      sourcepathref="javadoc.sourcepath"
+      destdir="${catalina.build}/javadoc"
+      author="true"
+      version="true"
+      windowtitle="Catalina Internal API Documentation"
+      doctitle="Catalina API"
+      bottom="Copyright &#169; 2000-2002 Apache Software Foundation.  All Rights Reserved."
+    />
+  </target>
+
+
+  <!-- ======================= BUILD: Clean Directory ===================== -->
+  <target name="build-clean">
+
+    <delete dir="${catalina.build}"/>
+
+    <ant dir="${tomcat-util.home}" target="clean"/>
+    <ant dir="${tomcat-coyote.home}" target="clean"/>
+    <ant dir="${tomcat-jk.home}" target="clean"/>
+    <ant dir="${tomcat-jni.home}" target="clean"/>
+    <ant dir="${tomcat-http11.home}" target="clean"/>
+
+  </target>
+
+
+  <!-- ==================== BUILD: Rebuild Everything ===================== -->
+  <target name="all" depends="build-clean,build-main"
+   description="Clean, build, and deploy Catalina component"/>
+
+
+  <!-- ================ TEST: Compile Unit Tests ========================== -->
+  <target name="build-tests" depends="build-main" if="junit.present">
+    <mkdir      dir="${catalina.build}/tests"/>
+    <!-- Compile unit test classes -->
+    <javac srcdir="src/test" destdir="${catalina.build}/tests"
+           deprecation="off" debug="on" optimize="off"
+           excludes="**/CVS/**">
+      <classpath refid="test.classpath"/>
+    </javac>
+  </target>
+
+
+  <!-- ==================== TEST: Execute Unit Tests ====================== -->
+  <target name="test" if="junit.present"
+   description="Run all unit test cases"
+   depends="build-tests,test-dir-context,test-realm,test-util">
+  </target>
+
+  <target name="test-dir-context" if="junit.present">
+
+    <echo message="Running FileDirContext tests"/>
+    <java classname="${test.runner}" fork="yes"
+        failonerror="${test.failonerror}">
+      <sysproperty key="doc.base" value="${test.webapp}"/>
+      <arg value="org.apache.naming.resources.FileDirContextTestCase"/>
+      <classpath refid="test.classpath"/>
+    </java>
+
+    <echo message="Running WARDirContext tests"/>
+    <jar jarfile="${test.webapp.war}">
+      <fileset dir="${test.webapp}"/>
+    </jar>
+    <java classname="${test.runner}" fork="yes"
+        failonerror="${test.failonerror}">
+      <sysproperty key="doc.base" value="${test.webapp.war}"/>
+      <arg value="org.apache.naming.resources.WARDirContextTestCase"/>
+      <classpath refid="test.classpath"/>
+    </java>
+    <delete file="${test.webapp.war}"/>
+
+  </target>
+
+  <target name="test-realm" if="junit.present">
+
+    <echo message="Running Realm tests"/>
+    <java classname="${test.runner}" fork="yes"
+        failonerror="${test.failonerror}">
+      <arg value="org.apache.catalina.realm.JNDIRealmTestCase"/>
+      <classpath refid="test.classpath"/>
+    </java>
+  </target>
+
+  <target name="test-util" if="junit.present">
+
+    <echo message="Running CookieTools tests"/>
+    <java classname="${test.runner}" fork="yes"
+        failonerror="${test.failonerror}">
+      <arg value="org.apache.catalina.util.CookieToolsTestCase"/>
+      <classpath refid="test.classpath"/>
+    </java>
+
+    <echo message="Running URL tests"/>
+    <java classname="${test.runner}" fork="yes"
+        failonerror="${test.failonerror}">
+      <arg value="org.apache.catalina.util.URLTestCase"/>
+      <classpath refid="test.classpath"/>
+    </java>
+
+  </target>
+
+
+  <!-- ====================== DEPLOY: Create Directories ================== -->
+  <target name="deploy-prepare">
+    <mkdir dir="${catalina.deploy}"/>
+    <mkdir dir="${catalina.deploy}/bin"/>
+    <mkdir dir="${catalina.deploy}/conf"/>
+    <mkdir dir="${catalina.deploy}/logs"/>
+    <mkdir dir="${catalina.deploy}/common/classes"/>
+    <mkdir dir="${catalina.deploy}/common/endorsed"/>
+    <mkdir dir="${catalina.deploy}/common/lib"/>
+    <mkdir dir="${catalina.deploy}/server/classes"/>
+    <mkdir dir="${catalina.deploy}/server/lib"/>
+    <mkdir dir="${catalina.deploy}/shared/classes"/>
+    <mkdir dir="${catalina.deploy}/shared/lib"/>
+    <mkdir dir="${catalina.deploy}/work"/>
+    <mkdir dir="${catalina.deploy}/temp"/>
+  </target>
+
+
+  <!-- ====================== DEPLOY: Copy Static Files =================== -->
+  <target name="deploy-static" depends="build-main,deploy-prepare">
+
+    <!-- Executable Commands -->
+    <copy todir="${catalina.deploy}/bin">
+      <fileset dir="${catalina.build}/bin" />
+    </copy>
+    <fixcrlf srcdir="${catalina.deploy}/bin" includes="*.sh"  eol="lf"/>
+    <fixcrlf srcdir="${catalina.deploy}/bin" includes="*.bat" eol="crlf"/>
+    <chmod perm="+x" file="${catalina.deploy}/bin/catalina.sh"/>
+    <chmod perm="+x" file="${catalina.deploy}/bin/digest.sh"/>
+    <chmod perm="+x" file="${catalina.deploy}/bin/startup.sh"/>
+    <chmod perm="+x" file="${catalina.deploy}/bin/shutdown.sh"/>
+    <chmod perm="+x" file="${catalina.deploy}/bin/tool-wrapper.sh"/>
+
+    <!-- Common Extensions -->
+    <copy todir="${catalina.deploy}/common/endorsed">
+      <fileset dir="${catalina.build}/common/endorsed" />
+    </copy>
+    <copy todir="${catalina.deploy}/common/lib">
+      <fileset dir="${catalina.build}/common/lib" />
+    </copy>
+
+    <!-- Configuration Files -->
+    <copy todir="${catalina.deploy}/conf">
+      <fileset dir="${catalina.build}/conf" />
+    </copy>
+
+    <!-- Server Components -->
+    <copy todir="${catalina.deploy}/server/lib">
+      <fileset dir="${catalina.build}/server/lib" />
+    </copy>
+
+    <!-- Shared Extensions -->
+    <copy todir="${catalina.deploy}/shared/lib">
+      <fileset dir="${catalina.build}/shared/lib" />
+    </copy>
+
+    <!-- Temp Files -->
+    <copy todir="${catalina.deploy}/temp">
+      <fileset dir="${catalina.build}/temp" />
+    </copy>
+
+  </target>
+
+
+  <!-- ====================== DEPLOY: Create Catalina JARs ================ -->
+  <target name="deploy-catalina" depends="deploy-static,build-main"
+   description="Build and deploy Catalina component">
+
+    <!-- Catalina Bootstrap JAR File -->
+    <jar jarfile="${catalina.deploy}/bin/bootstrap.jar" 
+         manifest="etc/bootstrap.MF">
+      <fileset dir="${catalina.build}/server/classes">
+        <include name="org/apache/catalina/startup/Bootstrap.class" />
+        <include name="org/apache/catalina/startup/BootstrapService.class" />
+        <include name="org/apache/catalina/startup/BootstrapServiceContext.class" />
+        <include name="org/apache/catalina/startup/ClassLoaderFactory.class" />
+        <include name="org/apache/catalina/startup/Tool.class" />
+        <include name="org/apache/catalina/loader/StandardClassLoader*.class" />
+        <include name="org/apache/catalina/loader/Extension.class" />
+        <include name="org/apache/catalina/loader/Reloader.class" />
+        <include name="org/apache/catalina/startup/SecurityClassLoad.class" />
+        <include name="org/apache/naming/JndiPermission.class" />
+      </fileset>
+    </jar>
+
+    <!-- Catalina Main JAR File -->
+    <jar jarfile="${catalina.deploy}/server/lib/catalina.jar">
+      <fileset dir="${catalina.build}/server/classes">
+        <exclude name="org/apache/catalina/ant/**" />
+        <exclude name="org/apache/naming/**" />
+        <exclude name="org/apache/catalina/startup/Bootstrap.class" />
+        <exclude name="org/apache/catalina/startup/BootstrapService.class" />
+        <exclude name="org/apache/catalina/startup/ClassLoaderFactory.class" />
+        <exclude name="org/apache/catalina/startup/Tool.class" />
+        <exclude name="org/apache/catalina/loader/StandardClassLoader*.class" />
+        <exclude name="org/apache/catalina/loader/Extension.class" />
+        <exclude name="org/apache/catalina/loader/Reloader.class" />
+        <exclude name="org/apache/catalina/startup/SecurityClassLoad.class" />
+        <exclude name="org/apache/catalina/servlets/**" />
+        <exclude name="org/apache/catalina/ssi/**" />
+      </fileset>
+    </jar>
+
+    <!-- Catalina Ant Tasks JAR File -->
+    <jar jarfile="${catalina.deploy}/server/lib/catalina-ant.jar">
+      <fileset dir="${catalina.build}/server/classes">
+        <include name="org/apache/catalina/ant/**" />
+        <include name="org/apache/catalina/util/Base64.class" />
+      </fileset>
+    </jar>
+
+    <!-- Naming - Common JAR File -->
+    <jar jarfile="${catalina.deploy}/common/lib/naming-common.jar">
+      <fileset dir="${catalina.build}/server/classes">
+        <include name="org/apache/naming/*" />
+        <include name="org/apache/naming/factory/Constants.class" />
+        <include name="org/apache/naming/factory/ResourceLinkFactory.class" />
+        <include name="org/apache/naming/java/*" />
+        <exclude name="org/apache/naming/JndiPermission.class" />
+      </fileset>
+    </jar>
+
+    <!-- Naming - Factory JAR File -->
+    <jar jarfile="${catalina.deploy}/common/lib/naming-factory.jar">
+      <fileset dir="${catalina.build}/server/classes">
+        <include name="org/apache/naming/factory/**" />
+        <exclude name="org/apache/naming/factory/Constants.class" />
+        <exclude name="org/apache/naming/factory/ResourceLinkFactory.class" />
+      </fileset>
+    </jar>
+
+    <!-- Naming - Resources JAR File -->
+    <jar jarfile="${catalina.deploy}/common/lib/naming-resources.jar">
+      <fileset dir="${catalina.build}/server/classes">
+        <include name="org/apache/naming/resources/**" />
+      </fileset>
+    </jar>
+
+    <!-- Servlets - Common Files -->
+    <jar  jarfile="${catalina.deploy}/server/lib/servlets-common.jar">
+      <fileset dir="${catalina.build}/server/classes">
+        <include name="org/apache/catalina/servlets/Constants.class" />
+        <include name="org/apache/catalina/servlets/*.properties" />
+      </fileset>
+    </jar>
+
+    <!-- Servlets - CGI Servlet -->
+    <jar jarfile="${catalina.deploy}/server/lib/servlets-cgi.renametojar">
+      <fileset dir="${catalina.build}/server/classes">
+        <include name="org/apache/catalina/servlets/CGI*" />
+      </fileset>
+    </jar>
+
+    <!-- Servlets - Default File-Serving Servlet -->
+    <jar jarfile="${catalina.deploy}/server/lib/servlets-default.jar">
+      <fileset dir="${catalina.build}/server/classes">
+        <include name="org/apache/catalina/servlets/Default*" />
+      </fileset>
+    </jar>
+
+    <!-- Servlets - Invoker Servlet -->
+    <jar jarfile="${catalina.deploy}/server/lib/servlets-invoker.jar">
+      <fileset dir="${catalina.build}/server/classes">
+        <include name="org/apache/catalina/servlets/Invoker*" />
+      </fileset>
+    </jar>
+
+    <!-- Servlets - Manager Servlet -->
+    <jar jarfile="${catalina.deploy}/server/lib/servlets-manager.jar">
+      <fileset dir="${catalina.build}/server/classes">
+        <include name="org/apache/catalina/servlets/*Manager*" />
+      </fileset>
+    </jar>
+
+    <!-- Servlets - SSI Servlet -->
+    <jar jarfile="${catalina.deploy}/server/lib/servlets-ssi.renametojar">
+      <fileset dir="${catalina.build}/server/classes">
+        <include name="org/apache/catalina/ssi/**" />
+      </fileset>
+    </jar>
+
+    <!-- Servlets - Webdav Servlet -->
+    <jar jarfile="${catalina.deploy}/server/lib/servlets-webdav.jar">
+      <fileset dir="${catalina.build}/server/classes">
+        <include name="org/apache/catalina/servlets/Webdav*" />
+      </fileset>
+    </jar>
+
+  </target>
+
+
+  <!-- ====================== DEPLOY: Create Catalina JARs ================ -->
+  <target name="deploy" depends="deploy-catalina,build-tomcat-coyote,build-tomcat-jk,build-tomcat-http11"
+   description="Build and deploy Catalina">
+  </target>
+
+
+  <!-- ================ DIST: Create Distribution ========================= -->
+  <target name="dist" depends="build-main"
+   description="Create binary distribution">
+
+    <!-- Executable Commands -->
+    <mkdir dir="${catalina.dist}/bin"/>
+    <copy todir="${catalina.dist}/bin">
+      <fileset dir="${catalina.build}/bin" />
+    </copy>
+    <fixcrlf srcdir="${catalina.dist}/bin" includes="*.sh" eol="lf"/>
+    <fixcrlf srcdir="${catalina.dist}/bin" includes="*.bat" eol="crlf"/>
+    <chmod perm="+x" file="${catalina.dist}/bin/catalina.sh"/>
+    <chmod perm="+x" file="${catalina.dist}/bin/digest.sh"/>
+    <chmod perm="+x" file="${catalina.dist}/bin/startup.sh"/>
+    <chmod perm="+x" file="${catalina.dist}/bin/shutdown.sh"/>
+    <chmod perm="+x" file="${catalina.dist}/bin/tool-wrapper.sh"/>
+
+    <!-- Common Extensions -->    
+    <mkdir dir="${catalina.dist}/common/classes"/>
+    <copy todir="${catalina.dist}/common/classes">
+      <fileset dir="${catalina.build}/common/classes" />
+    </copy>
+    <mkdir dir="${catalina.dist}/common/lib"/>
+    <copy todir="${catalina.dist}/common/lib">
+      <fileset dir="${catalina.build}/common/lib" />
+    </copy>
+
+    <!-- Configuration Files -->
+    <mkdir dir="${catalina.dist}/conf"/>
+    <copy todir="${catalina.dist}/conf">
+      <fileset dir="${catalina.build}/conf" />
+    </copy>
+
+    <!-- Server Components -->
+    <mkdir dir="${catalina.dist}/server/classes"/>
+    <copy todir="${catalina.dist}/server/classes">
+      <fileset dir="${catalina.build}/server/classes" />
+    </copy>
+    <mkdir dir="${catalina.dist}/server/lib"/>
+    <copy todir="${catalina.dist}/server/lib">
+      <fileset dir="${catalina.build}/server/lib" />
+    </copy>
+
+    <!-- Shared Extensions -->
+    <mkdir dir="${catalina.dist}/shared/classes"/>
+    <copy todir="${catalina.dist}/shared/classes">
+      <fileset dir="${catalina.build}/shared/classes" />
+    </copy>
+    <mkdir dir="${catalina.dist}/shared/lib"/>
+    <copy todir="${catalina.dist}/shared/lib">
+      <fileset dir="${catalina.build}/shared/lib" />
+    </copy>
+
+  </target>
+
+
+  <!-- ======================== DIST: Clean Directory ===================== -->
+  <target name="dist-clean">
+    <delete dir="${catalina.dist}"/>
+  </target>
+
+
+  <!-- ====================== Convenient Synonyms ========================= -->
+  <target name="clean" depends="build-clean, dist-clean"
+   description="Clean build and dist directories"/>
+
+
+</project>

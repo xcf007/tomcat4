@@ -1,0 +1,200 @@
+<?xml version="1.0"?>
+<!DOCTYPE document [
+  <!ENTITY project SYSTEM "project.xml">
+]>
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+
+<document url="webapp.html">
+
+  &project;
+
+  <properties>
+    <author email="craigmcc@apache.org">Craig R. McClanahan</author>
+    <title>The Webapp Connector</title>
+  </properties>
+
+<body>
+
+
+<section name="Introduction">
+
+  <p><b>IMPORTANT NOTE: The Webapp connector is now deprecated. Use the 
+  <a href="coyotejk.html">Coyote JK Connector</a> with
+  <a href="jk.html">JK</a> or
+  <a href="http://httpd.apache.org/docs-2.1/mod/mod_proxy_ajp.html">
+  mod_proxy_ajp</a> instead.</b></p>
+
+  <p>The <strong>Webapp Connector</strong> element represents a
+  <strong>Connector</strong> component that communicates with a web
+  connector via the <code>WARP</code> protocol.  This is used for cases
+  where you wish to invisibly integrate Tomcat 4 into an existing (or new)
+  Apache installation, and you want Apache to handle the static content
+  contained in the web application, and/or utilize Apache's SSL
+  processing.  In many application environments, this will result in
+  better overall performance than running your applications under
+  Tomcat stand-alone using the
+  <a href="http11.html">HTTP/1.1 Connector</a>. However, the only way
+  to know for sure whether it will provide better performance for
+  <strong>your</strong> application is to try it both ways.</p>
+
+  <p><strong>FIXME</strong> - general description of what happens at server
+  startup time when you have the WARP Connector configured.</p>
+
+</section>
+
+
+<section name="Attributes">
+
+  <subsection name="Common Attributes">
+
+  <p>All implementations of <strong>Connector</strong>
+  support the following attributes:</p>
+
+  <attributes>
+
+    <attribute name="className" required="true">
+      <p>Java class name of the implementation to use.  This class must
+      implement the <code>org.apache.catalina.Connector</code> interface.
+      You must specify the standard value defined below.</p>
+    </attribute>
+
+    <attribute name="enableLookups" required="false">
+      <p>Set to <code>true</code> if you want calls to
+      <code>request.getRemoteHost()</code> to perform DNS lookups in
+      order to return the actual host name of the remote client.  Set
+      to <code>false</code> to skip the DNS lookup and return the IP
+      address in String form instead (thereby improving performance).
+      By default, DNS lookups are disabled.</p>
+    </attribute>
+
+    <attribute name="redirectPort" required="false">
+      <p>If this <strong>Connector</strong> is supporting non-SSL
+      requests, and a request is received for which a matching
+      <code>&lt;security-constraint&gt;</code> requires SSL transport,
+      Catalina will automatically redirect the request to the port
+      number specified here.</p>
+    </attribute>
+
+    <attribute name="scheme" required="false">
+      <p>Set this attribute to the name of the protocol you wish to have
+      returned by calls to <code>request.getScheme()</code>.  For
+      example, you would set this attribute to "<code>https</code>"
+      for an SSL Connector.  The default value is "<code>http</code>".</p>
+    </attribute>
+
+    <attribute name="secure" required="false">
+      <p>Set this attribute to <code>true</code> if you wish to have
+      calls to <code>request.isSecure()</code> to return <code>true</code>
+      for requests received by this Connector (you would want this on an
+      SSL Connector).  The default value is <code>false</code>.</p>
+    </attribute>
+
+  </attributes>
+
+  <p><strong>FIXME</strong> - Update the above descriptions for anything
+  that the WARP Connector delegates to Apache.</p>
+
+  </subsection>
+
+  <subsection name="Standard Implementation">
+
+  <p>The standard implementation of <strong>Webapp Connector</strong> is
+  <strong>org.apache.catalina.connector.warp.WarpConnector</strong>.
+  It supports the following additional attributes (in addition to the
+  common attributes listed above):</p>
+
+  <attributes>
+
+    <attribute name="acceptCount" required="false">
+      <p>The maximum queue length for incoming connection requests when
+      all possible request processing threads are in use.  Any requests
+      received when the queue is full will be refused.  The default
+      value is 10.</p>
+    </attribute>
+
+    <attribute name="debug" required="false">
+      <p>The debugging detail level of log messages generated by this
+      component, with higher numbers creating more detailed output.
+      If not specified, this attribute is set to zero (0).</p>
+    </attribute>
+
+    <attribute name="maxProcessors" required="false">
+      <p>The maximum number of request processing threads to be created
+      by this <strong>Connector</strong>, which therefore determines the
+      maximum number of simultaneous requests that can be handled.  If
+      not specified, this attribute is set to 20.</p>
+    </attribute>
+
+    <attribute name="minProcessors" required="false">
+      <p>The number of request processing threads that will be created
+      when this <strong>Connector</strong> is first started.  This
+      attribute should be set to a value smaller than that set for
+      <code>maxProcessors</code>.  The default value is 5.</p>
+    </attribute>
+
+    <attribute name="port" required="true">
+      <p>The TCP port number on which this <strong>Connector</strong>
+      will create a server socket and await incoming connections.  Your
+      operating system will allow only one server application to listen
+      to a particular port number on a particular IP address.</p>
+    </attribute>
+
+    <attribute name="appBase" required="false">
+      <p>Set the applications base directory for <strong>Hosts </strong>
+      created via WARP.
+      The default value is "webapps".</p>
+    </attribute>
+
+  </attributes>
+
+  </subsection>
+
+</section>
+
+
+<section name="Nested Components">
+
+  <subsection name="WarpEngine">
+  
+  <p>mod-webapp offers a specific Engine when running the
+  <strong>Webapp Connector</strong> in its own
+  <a href="service.html">service</a>.
+  This Engine allows webapp to create and to map the
+  <a href="host.html">Hosts</a> corresponding to the VirtualHost defined in the
+  httpd.conf file.</p>
+  <p>The standard implementation of <strong>Webapp Engine</strong> is
+  <strong>org.apache.catalina.connector.warp.WarpEngine</strong>.
+  It supports the standard <a href="engine.html">Engine</a>.
+  attributes. </p>
+
+  </subsection>
+
+</section>
+
+
+<section name="Special Features">
+
+  <p><strong>FIXME</strong> - Document any special features supported by the
+  WARP Connector.</p>
+
+</section>
+
+
+</body>
+
+</document>

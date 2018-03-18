@@ -1,0 +1,147 @@
+<?xml version="1.0"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<!DOCTYPE document [
+  <!ENTITY project SYSTEM "project.xml">
+]>
+<document url="systemprops.html">
+
+  &project;
+
+  <properties>
+    <title>System Properties</title>
+  </properties>
+
+<body>
+
+<section name="Introduction">
+  <p>The follow sections list the system properties that may be set to modify
+  the default Tomcat behaviour.</p>
+</section>
+
+<section name="Security">
+
+  <properties>
+
+    <property
+    name="org.apache.coyote.tomcat4. CoyoteAdapter.ALLOW_BACKSLASH">
+      <p>If this is <code>true</code> the '\' character will be permitted as a
+      path delimiter. If not specified, the default value of <code>false</code>
+      will be used.</p>
+    </property>
+
+    <property
+    name="org.apache.tomcat.util.buf. UDecoder.ALLOW_ENCODED_SLASH">
+      <p>If this is <code>true</code> '%2F' and '%5C' will be permitted as path
+      delimiters. If not specified, the default value of <code>false</code> will
+      be used.</p>
+    </property>
+
+    <property
+    name="org.apache.coyote. USE_CUSTOM_STATUS_MSG_IN_HEADER"><p>If this is
+      <code>true</code> custom HTTP status messages will be used within HTTP
+      headers. Users must ensure that any such message is ISO-8859-1 encoded,
+      particularly if user provided input is included in the message, to prevent
+      a possible XSS vulnerability. If not specified the default value of
+      <code>false</code> will be used.</p>
+    </property>
+
+  </properties>
+
+</section>
+
+
+<section name="Specification">
+
+  <properties>
+
+    <property name="org.apache.catalina. STRICT_SERVLET_COMPLIANCE">
+      <p>If this is <code>true</code> cookies will be parsed strictly and v0
+      cookies will not work with any invalid characters.
+      <br/>If set to false, any v0 cookie with invalid characters will be
+      switched to a v1 cookie and the value will be quoted. If not specified,
+      the default value of <code>false</code> will be used.
+      </p>
+    </property>
+
+    <property
+    name="org.apache.tomcat.util.http. ServerCookie.ALWAYS_ADD_EXPIRES">
+      <p>If this is <code>true</code> Tomcat will always add an expires
+      parameter to a SetCookie header even for cookies with version greater than
+      zero. This is to work around a known IE6 and IE7 bug that causes IE to
+      ignore the Max-Age parameter in a SetCookie header.If not specified, the
+      default value of <code>true</code> will be used.</p>
+    </property>
+
+  </properties>
+
+</section>
+
+
+<section name="Other">
+
+  <properties>
+
+    <property name="catalina.useNaming">
+      <p>If this is <code>false</code> it will override the
+      <code>useNaming</code> attribute for all <a href="context.html">
+      Context</a> elements.</p>
+    </property>
+
+    <property name="catalina.config">
+      <p>The URL for the catalina.properties configuration file.</p>
+    </property>
+
+    <property name="loader.config">
+      <p>The URL for the loader.properties configuration file.</p>
+    </property>
+
+    <property name="tomcat.util.buf.StringCache.byte.enabled">
+      <p>If <code>true</code>, the String cache is enabled for
+      <code>ByteChunk</code>. If not specified, the default value of
+      <code>false</code> will be used.</p>
+    </property>
+
+    <property name="tomcat.util.buf.StringCache.char.enabled">
+      <p>If <code>true</code>, the String cache is enabled for
+      <code>CharChunk</code>. If not specified, the default value of
+      <code>false</code> will be used.</p>
+    </property>
+
+    <property name="tomcat.util.buf.StringCache.trainThreshold">
+      <p>The number of times <code>toString()</code> must be called before the
+      cache is activated. If not specified, the default value of
+      <code>20000</code> will be used.</p>
+    </property>
+
+    <property name="tomcat.util.buf.StringCache.cacheSize">
+      <p>The size of the String cache. If not specified, the default value of
+      <code>200</code> will be used.</p>
+    </property>
+
+    <property name="tomcat.util.buf.StringCache.maxStringSize">
+      <p>The maximum length of String that will be cached. If not specified, the
+      default value of <code>128</code> will be used.</p>
+    </property>
+
+  </properties>
+
+</section>
+
+
+</body>
+</document>

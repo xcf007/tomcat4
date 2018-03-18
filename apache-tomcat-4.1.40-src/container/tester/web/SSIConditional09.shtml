@@ -1,0 +1,38 @@
+1
+<!--#if expr="1=2" -->
+a
+##<!--#if expr="1=2" -->
+b
+##<!--#else -->
+c
+##<!--#endif -->
+d
+<!--#elif expr="2=2" -->
+e
+##<!--#if expr="2=2" -->
+f
+####<!--#if expr="1=2" -->
+**11
+####<!--#elif expr="2=3" -->
+**22
+####<!--#endif -->
+**33
+##<!--#else -->
+g
+##<!--#endif -->
+h
+<!--#else -->
+i
+##<!--#if expr="1=1" -->
+j
+##<!--#else -->
+k
+##<!--#endif -->
+l
+<!--#endif -->
+#
+now we test extra #endif commands
+<!--#endif -->
+n
+<!--#endif -->
+o

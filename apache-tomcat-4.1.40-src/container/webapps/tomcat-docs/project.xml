@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+
+<project name="Tomcat Documentation - Top Level Directory"
+        href="http://tomcat.apache.org/">
+
+    <title>Apache Tomcat 4</title>
+
+    <logo href="/images/tomcat.gif">
+      The Tomcat Servlet/JSP Container
+    </logo>
+
+    
+    <body>
+
+    <menu name="Links">
+        <item name="Docs Home"             href="index.html"/>
+    </menu>
+
+    <menu name="Getting Started">
+        <item name="Introduction"          href="introduction.html"/>
+        <item name="READ ME"               href="README.txt"/>
+        <item name="Install and Run"       href="RUNNING.txt"/>
+        <item name="Building from Source"  href="BUILDING.txt"/>
+    </menu>
+
+    <menu name="Configuration">
+        <item name="Reference"             href="config/index.html"/>
+    </menu>
+
+    <menu name="Administrators">
+        <item name="CGI HOW-TO"            href="cgi-howto.html"/>
+        <item name="Class Loader HOW-TO"   href="class-loader-howto.html"/>
+        <item name="Connectors List"       href="config/connectors.html"/>
+        <item name="HTML Manager App HOW-TO" href="html-manager-howto.html"/>
+        <item name="JK Documentation"      href="http://tomcat.apache.org/connectors-doc/"/>
+        <item name="JNDI DataSource HOW-TO" 
+              href="jndi-datasource-examples-howto.html"/>
+        <item name="JNDI Resources HOW-TO" href="jndi-resources-howto.html"/>
+        <item name="JSP Engine Config HOW-TO" href="jasper-howto.html"/>
+        <item name="Manager App HOW-TO"    href="manager-howto.html"/>
+        <item name="MBean Descriptor HOW-TO" 
+              href="mbeans-descriptor-howto.html"/>
+        <item name="Proxy Support HOW-TO"  href="proxy-howto.html"/>
+        <item name="Realm HOW-TO"          href="realm-howto.html"/>
+        <item name="Security Mgr. HOW-TO"  href="security-manager-howto.html"/>
+        <item name="SSI Config HOW-TO"     href="ssi-howto.html"/>
+        <item name="SSL Config HOW-TO"     href="ssl-howto.html"/>
+    </menu>
+
+    <menu name="Application Developers">
+        <item name="App Developer Guide"   href="appdev/index.html"/>
+        <item name="Servlet/JSP Javadocs"  href="servletapi/index.html"/>
+    </menu>
+
+    <menu name="Catalina Developers">
+        <item name="Functional Specs."     href="catalina/funcspecs/index.html"/>
+        <item name="Javadocs"              href="catalina/docs/api/index.html"/>
+    </menu>
+
+    <menu name="Jasper Developers">
+        <item name="Javadocs"              href="jasper/docs/api/index.html"/>
+    </menu>
+
+    </body>
+
+</project>

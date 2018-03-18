@@ -1,0 +1,6 @@
+JAKARTA TOMCAT CONNECTORS AJP CHANGELOG:            -*-text-*-
+Last modified at [$Date: 2004-08-03 11:05:52 +0100 (Tue, 03 Aug 2004) $]
+
+Changes in AJP HEAD:
+    * Imported proxy sources from 2.1-HEAD
+      [Mladen Turk]

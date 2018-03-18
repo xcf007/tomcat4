@@ -1,0 +1,256 @@
+#
+#  Licensed to the Apache Software Foundation (ASF) under one or more
+#  contributor license agreements.  See the NOTICE file distributed with
+#  this work for additional information regarding copyright ownership.
+#  The ASF licenses this file to You under the Apache License, Version 2.0
+#  (the "License"); you may not use this file except in compliance with
+#  the License.  You may obtain a copy of the License at
+# 
+#      http://www.apache.org/licenses/LICENSE-2.0
+# 
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
+
+# -----------------------------------------------------------------------------
+# build.properties.sample
+#
+# This is an example "build.properties" file, used to customize building Tomcat
+# for your local environment.  It defines the location of all external
+# modules that Tomcat depends on.  Copy this file to "build.properties"
+# in the top-level source directory, and customize it as needed.
+#
+# $Id: build.properties.default 785254 2009-06-16 15:30:30Z markt $
+# -----------------------------------------------------------------------------
+
+
+# ----- Compile Control Flags -----
+compile.debug=on
+compile.deprecation=off
+compile.optimize=on
+
+
+# ----- Build Control Flags
+
+#Build all components
+#full.dist=on
+
+#Build lightweight JDK 1.4 distribution
+#light.dist=on
+
+#Hide configuration flags display
+#flags.hide=on
+
+#Version number
+version=4.1.40
+
+#Proxy to download subproject
+#proxy.host=proxy.domain
+#proxy.port=8080
+#proxy.use=on
+
+# ----- Default Base Path for Dependent Packages -----
+base.path=/usr/share/java
+
+
+# ----- Jakarta Tomcat Connectors source path -----
+#jtc.home=../connectors
+
+
+# ----- Jakarta Tomcat Jasper source path -----
+#jasper.home=../jasper
+
+
+# ----- Jakarta files base location -----
+base-jakarta.loc=http://archive.apache.org/dist/jakarta
+
+# ----- Commons files base location -----
+base-commons.loc=http://archive.apache.org/dist/commons
+
+# ----- SourceForge base location ----
+base-sourceforge.loc=http://switch.dl.sourceforge.net/sourceforge
+
+# --------------------------------------------------
+#                REQUIRED LIBRARIES
+# --------------------------------------------------
+
+
+# ----- Commons Beanutils, version 1.1 or later -----
+commons-beanutils.home=${base.path}/commons-beanutils-1.7.0
+commons-beanutils.lib=${commons-beanutils.home}
+commons-beanutils.jar=${commons-beanutils.lib}/commons-beanutils.jar
+commons-beanutils.loc=${base-commons.loc}/beanutils/binaries/commons-beanutils-1.7.0.tar.gz
+
+
+# ----- Commons Collections, version 1.0 or later -----
+commons-collections.home=${base.path}/commons-collections-3.2
+commons-collections.lib=${commons-collections.home}
+commons-collections.jar=${commons-collections.lib}/commons-collections-3.2.jar
+commons-collections.loc=${base-commons.loc}/collections/binaries/commons-collections-3.2.tar.gz
+
+
+# ----- Commons Digester, version 1.1.1 or later -----
+commons-digester.home=${base.path}/commons-digester-1.8
+commons-digester.lib=${commons-digester.home}
+commons-digester.jar=${commons-digester.lib}/commons-digester-1.8.jar
+commons-digester.loc=${base-commons.loc}/digester/binaries/commons-digester-1.8.tar.gz
+
+
+# ----- Commons FileUpload, version 1.0 or later -----
+commons-fileupload.home=${base.path}/commons-fileupload-1.2
+commons-fileupload.lib=${commons-fileupload.home}/lib
+commons-fileupload.jar=${commons-fileupload.lib}/commons-fileupload-1.2.jar
+commons-fileupload.loc=${base-commons.loc}/fileupload/binaries/commons-fileupload-1.2-bin.tar.gz
+
+# ----- Commons IO, version 1.1 or later -----
+commons-io.home=${base.path}/commons-io-1.3
+commons-io.lib=${commons-io.home}
+commons-io.jar=${commons-io.lib}/commons-io-1.3.jar
+commons-io.loc=${base-commons.loc}/io/binaries/commons-io-1.3.tar.gz
+
+
+# ----- Commons Logging, version 1.1 or later -----
+commons-logging.home=${base.path}/commons-logging-1.1.1
+commons-logging.lib=${commons-logging.home}
+commons-logging-api.jar=${commons-logging.lib}/commons-logging-api-1.1.1.jar
+commons-logging.jar=${commons-logging.lib}/commons-logging-1.1.1.jar
+commons-logging.loc=${base-commons.loc}/logging/binaries/commons-logging-1.1.1-bin.tar.gz
+
+
+# ----- Commons Modeler, version 1.1 or later -----
+commons-modeler.home=${base.path}/commons-modeler-2.0.1
+commons-modeler.lib=${commons-modeler.home}
+commons-modeler.jar=${commons-modeler.lib}/commons-modeler-2.0.1.jar
+commons-modeler.loc=${base-commons.loc}/modeler/binaries/commons-modeler-2.0.1.tar.gz
+
+
+# ----- Jakarta Regular Expressions Library, version 1.2 -----
+regexp.home=${base.path}/jakarta-regexp-1.5
+regexp.lib=${regexp.home}
+regexp.jar=${regexp.lib}/jakarta-regexp-1.5.jar
+regexp.loc=${base-jakarta.loc}/regexp/source/jakarta-regexp-1.5.tar.gz
+
+
+# ----- Jakarta Servlet API Classes (Servlet 2.3 / JSP 1.2) -----
+servlet.home=${basedir}/../servletapi/dist
+servlet.lib=${servlet.home}/lib
+servlet.jar=${servlet.lib}/servlet.jar
+
+
+# ----- Xerces XML Parser, version 2.0.0 or later -----
+# Note: Optional with JDK 1.4+, or if Xerces 1.x is present
+xerces.home=${base.path}/xerces-2_9_1
+xerces.lib=${xerces.home}
+xerces.loc=http://www.apache.org/dist/xml/xerces-j/Xerces-J-bin.2.9.1.tar.gz
+xercesImpl.jar=${xerces.lib}/xercesImpl.jar
+xmlParserAPIs.jar=${xerces.lib}/xml-apis.jar
+
+
+# --------------------------------------------------
+#                OPTIONAL LIBRARIES
+# --------------------------------------------------
+
+
+# ----- JavaBeans Activation Framework (JAF), version 1.0.1 or later -----
+# Note JAF 1.1 is available but requires JDK 1.4+
+activation.home=${base.path}/jaf-1.0.2
+activation.lib=${activation.home}
+activation.jar=${activation.lib}/activation.jar
+
+
+# ----- Commons Daemon, version 1.0 or later -----
+commons-daemon.home=${base.path}/commons-daemon-1.0.1
+commons-daemon.lib=${commons-daemon.home}
+commons-daemon.jar=${commons-daemon.lib}/commons-daemon.jar
+commons-daemon.loc=${base-commons.loc}/daemon/binaries/commons-daemon-1.0.1.tar.gz
+
+
+# ----- Commons DBCP, version 1.0 or later -----
+commons-dbcp.home=${base.path}/commons-dbcp-1.2.2
+commons-dbcp.lib=${commons-dbcp.home}
+commons-dbcp.jar=${commons-dbcp.lib}/commons-dbcp-1.2.2.jar
+commons-dbcp.loc=${base-commons.loc}/dbcp/binaries/commons-dbcp-1.2.2.tar.gz
+
+
+# ----- Commons Pool, version 1.0 or later -----
+# Note Commons Pool 2.0 is available but requires JDK 1.4+
+commons-pool.home=${base.path}/commons-pool-1.4
+commons-pool.lib=${commons-pool.home}
+commons-pool.jar=${commons-pool.lib}/commons-pool-1.4.jar
+commons-pool.loc=${base-commons.loc}/pool/binaries/commons-pool-1.4.tar.gz
+
+
+# ----- Java Database Connectivity (JDBC) Optional Package, version 2.0 -----
+jdbc20ext.home=${base.path}/jdbc2_0-stdext
+jdbc20ext.lib=${jdbc20ext.home}
+jdbc20ext.jar=${jdbc20ext.lib}/jdbc2_0-stdext.jar
+
+
+# ----- Java Management Extensions (JMX), JMX RI 1.0.1 or later or MX4J 1.0 or later -----
+jmx.home=${base.path}/mx4j-3.0.2
+jmx.lib=${jmx.home}/lib
+jmx.jar=${jmx.lib}/mx4j.jar
+jmx.license=${jmx.home}/LICENSE.txt
+jmx.loc=${base-sourceforge.loc}/mx4j/mx4j-3.0.2.tar.gz
+
+
+# ----- Java Secure Sockets Extension (JSSE), version 1.0.2 or later -----
+jsse.home=${base.path}/jsse1.0.3_03
+jsse.lib=${jsse.home}/lib
+jcert.jar=${jsse.lib}/jcert.jar
+jnet.jar=${jsse.lib}/jnet.jar
+jsse.jar=${jsse.lib}/jsse.jar
+
+
+# ----- Java Transaction API (JTA), version 1.0.1 or later -----
+jta.home=${base.path}/jta-1_1
+jta.lib=${jta.home}
+jta.jar=${jta.lib}/jta.jar
+
+
+# ----- JUnit Unit Test Suite, version 3.7 or later -----
+# Note JUnit 4.x is available but requires Java 5
+junit.home=${base.path}/junit3.8.2
+junit.lib=${junit.home}
+junit.jar=${junit.lib}/junit.jar
+junit.loc=${base-sourceforge.loc}/junit/junit3.8.2.zip
+
+
+# ----- Java Mail, version 1.2 or later -----
+# Note Java Mail 1.4 is available but requires JDK 1.4+
+mail.home=${base.path}/javamail-1.3.3_01
+mail.lib=${mail.home}
+mail.jar=${mail.lib}/mail.jar
+
+
+# ----- NSIS, version 2.14 or later -----
+nsis.home=C:/Program Files/nsis
+nsis.loc=${base-sourceforge.loc}/nsis/nsis-2.34-setup.exe?download
+nsis.install.exe=${nsis.home}/nsis-234.exe
+
+
+# ----- PureTLS Extension, version 0.9 or later -----
+# Note JDK 1.4 is required to build this from source
+puretls.home=${base.path}/puretls-0.9b5
+puretls.lib=${puretls.home}/build
+puretls.jar=${puretls.lib}/puretls.jar
+
+
+# ----- Struts, version 1.2.4 or later -----
+# Note struts 1.3.x onwards requires JDK 1.4+
+struts.home=${base.path}/struts-1.2.9-bin
+struts.lib=${struts.home}/lib
+struts.jar=${struts.lib}/struts.jar
+struts.loc=http://archive.apache.org/dist/struts/binaries/struts-1.2.9-bin.tar.gz
+
+# ----- Tyrex Data Source, version 1.0 or later -----
+# Now tyrex is http://tyrex.sourceforge.net/
+tyrex.home=${base.path}/tyrex-1.0.3
+tyrex.lib=${tyrex.home}
+tyrex.jar=${tyrex.lib}/tyrex-1.0.3.jar
+tyrex.loc=${base-sourceforge.loc}/tyrex/tyrex-1.0.3.tgz
+
+

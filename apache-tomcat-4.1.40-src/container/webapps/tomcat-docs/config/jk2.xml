@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<!DOCTYPE document [
+  <!ENTITY project SYSTEM "project.xml">
+]>
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+
+<document url="jk2.html">
+
+  &project;
+
+  <properties>
+    <author email="remm@apache.org">Remy Maucherat</author>
+    <title>The JK 2 Connector</title>
+  </properties>
+
+<body>
+
+
+<section name="Introduction">
+
+  <p><b>IMPORTANT NOTE: The JK 2 connector is now deprecated. Use 
+  <a href="jk.html">JK</a> or
+  <a href="http://httpd.apache.org/docs-2.1/mod/mod_proxy_ajp.html">
+  mod_proxy_ajp</a> instead.</b></p>
+
+  <p>The <strong>JK 2 Connector</strong> is a web server component used to
+  invisibly integrate Tomcat
+ with a web server such as Apache or IIS.
+  Communication between the web server and Tomcat is via the <code>JK</code>
+  protocol (also known as the <code>AJP</code> protocol).</p>
+
+  <p>Tomact is usually integrated with a web server in cases where you want
+  the web server to handle the static content contained in the web application,
+  and/or utilize the web server's SSL processing.  In many application
+  environments, this will result in better overall performance than running
+  your applications under Tomcat stand-alone using the <a href="coyote.html">
+  Coyote HTTP/1.1 Connector</a>. However, the only way to know for sure whether
+  it will provide better performance for <strong>your</strong> application is
+  to try it both ways.</p>
+
+</section>
+
+
+<section name="Configuration HOWTOs">
+
+  <p>Please refer to the <a href="../jk2/index.html">JK/JK2 documentation</a> 
+     for HOWTOs and complete configuration information.</p>
+
+</section>
+
+
+</body>
+
+</document>

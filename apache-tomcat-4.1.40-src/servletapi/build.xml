@@ -1,0 +1,172 @@
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one or more
+   contributor license agreements.  See the NOTICE file distributed with
+   this work for additional information regarding copyright ownership.
+   The ASF licenses this file to You under the Apache License, Version 2.0
+   (the "License"); you may not use this file except in compliance with
+   the License.  You may obtain a copy of the License at
+  
+       http://www.apache.org/licenses/LICENSE-2.0
+  
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+
+<project name="Servlet API Classes" default="compile" basedir=".">
+
+
+  <!-- =================== Environmental Properties ======================= -->
+
+  <!-- Load user property definition overrides -->
+  <property file="build.properties"/>
+  <property file="${user.home}/build.properties"/>
+
+  <!-- Establish property definition defaults -->
+  <property name="compile.debug"       value="true"/>
+  <property name="compile.deprecation" value="false"/>
+  <property name="compile.optimize"    value="true"/>
+  <property name="implementation.revision" value="1"/>
+  <property name="servletapi.build"    value="build"/>
+  <property name="servletapi.dist"     value="dist"/>
+  <property name="servletapi.lib"      value="lib"/>
+
+
+
+  <!-- ===================== Prepare Directories ========================= -->
+  <target name="prepare">
+
+    <!-- "Build" Hierarchy -->
+    <mkdir dir="${servletapi.build}"/>
+    <mkdir dir="${servletapi.build}/classes"/>
+    <mkdir dir="${servletapi.build}/docs"/>
+    <mkdir dir="${servletapi.build}/docs/api"/>
+
+    <!-- "Dist" Hierarchy -->
+    <mkdir dir="${servletapi.dist}"/>
+    <mkdir dir="${servletapi.dist}/docs"/>
+    <mkdir dir="${servletapi.dist}/docs/api"/>
+    <mkdir dir="${servletapi.dist}/lib"/>
+    <mkdir dir="${servletapi.dist}/src"/>
+
+    <!-- "Library" Hierarchy -->
+    <mkdir dir="${servletapi.lib}"/>
+
+  </target>
+
+
+  <!-- ======================= Static Files ============================== -->
+  <target name="static" depends="prepare">
+
+    <!-- "Dist" Hierarchy -->
+    <copy todir="${servletapi.dist}">
+      <fileset dir="." includes="BUILDING.txt"/>
+      <fileset dir="." includes="LICENSE"/>
+      <fileset dir="." includes="README.txt"/>
+    </copy>
+
+  </target>
+
+
+  <!-- ======================== Compile Classes ========================== -->
+  <target name="compile" depends="static"
+   description="Compile API classes (Default)">
+
+    <!-- Java classes -->
+    <javac srcdir="src/share" destdir="${servletapi.build}/classes"
+           debug="${compile.debug}" deprecation="${compile.deprecation}"
+        optimize="${compile.optimize}"/>
+
+    <!-- Associated property files -->
+    <copy todir="${servletapi.build}/classes">
+        <fileset dir="src/share">
+          <include name="**/*.properties"/>
+        </fileset>
+    </copy>
+
+    <!-- Servlet resources -->
+    <copy todir="${servletapi.build}/classes/javax/servlet/resources">
+        <fileset dir="src/share/dtd">
+          <include name="web-app*.dtd"/>
+        </fileset>
+    </copy>
+
+    <!-- JSP resources -->
+    <copy todir="${servletapi.build}/classes/javax/servlet/jsp/resources">
+        <fileset dir="src/share/dtd">
+          <include name="web-jsptaglibrary*.dtd"/>
+          <include name="jspxml.*"/>
+        </fileset>
+    </copy>
+
+  </target>
+
+
+  <!-- ======================== Build JavaDoc =========================== -->
+  <target name="javadoc" depends="prepare">
+
+    <javadoc packagenames="javax.servlet.*"
+             sourcepath="${basedir}/src/share"
+             destdir="${servletapi.build}/docs/api"
+             use="true"
+             windowtitle="Servlet and JavaServer Pages API Documentation"
+             doctitle="Servlet and JavaServer Pages API Documentation"
+             bottom="Copyright &amp;copy; 1999-2002 The Apache Software Foundation.  All Rights Reserved."/>
+
+  </target>
+
+
+  <!-- ===================== Distribution Files ========================= -->
+  <target name="dist" depends="compile,javadoc"
+   description="Create binary distribution">
+
+    <!-- Copy Javadocs -->
+    <copy todir="${servletapi.dist}/docs/api">
+        <fileset dir="${servletapi.build}/docs/api"/>
+    </copy>
+
+    <!-- Prepare Manifest -->
+    <copy tofile="${servletapi.build}/manifest"
+            file="src/etc/manifest" overwrite="yes">
+      <filterset>
+        <filter token="implementation.revision"
+                value="${implementation.revision}"/>
+      </filterset>
+    </copy>
+
+    <!-- Create JAR file -->
+    <jar jarfile="${servletapi.dist}/lib/servlet.jar"
+         basedir="${servletapi.build}/classes"
+        manifest="${servletapi.build}/manifest"/>
+
+    <!-- Copy API source files -->
+    <copy todir="${servletapi.dist}/src">
+        <fileset dir="src/share"/>
+    </copy>
+
+    <!-- Copy JAR file to ${servletapi.lib} (legacy reasons) -->
+    <copy file="${servletapi.dist}/lib/servlet.jar"
+        tofile="${servletapi.lib}/servlet.jar"/>
+
+  </target>
+
+
+  <!-- ====================== Clean Generated Files ===================== -->
+  <target name="clean"
+   description="Clean previous build results">
+
+    <delete dir="${servletapi.build}"/>
+    <delete dir="${servletapi.dist}"/>
+    <delete dir="${servletapi.lib}"/>
+
+  </target>
+
+
+  <!-- ========================= All In One Build ======================= -->
+  <target name="all" depends="clean,dist"
+   description="Clean, compile, and dist"/>
+
+
+</project>
